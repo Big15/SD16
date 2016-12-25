@@ -21,7 +21,7 @@ public class Servidor{
         boolean exit = false;
         HashMap <String,Vendedor> vend = new HashMap<>(); //vendedores registados
         HashMap <String,Comprador> comp = new HashMap<>(); //vendedores registados
-        Gestor gestor = new Gestor(vend,comp);
+        Gestor gestor = new Gestor();
         Thread t;       
         
         ss = new ServerSocket(port);
@@ -34,14 +34,16 @@ public class Servidor{
         vend.put(u1.getNome(), u1);
         comp.put(u2.getNome(), u2); 
         comp.put(u3.getNome(), u3); 
-   
+        gestor.setCompradores(comp);
+        gestor.setVendedores(vend);
+        
         /*Cria aqui uma thread para a consola do servidor*/
-        Thread_Consola consola = new Thread_Consola(gestor, vend, comp ,exit,ss); 
+        Thread_Consola consola = new Thread_Consola(gestor,exit,ss); 
         consola.start();
         //cria a ligação com Clientes
         while(!exit){            
             Socket s = ss.accept(); 
-            t = new Thread(new Thread_Cliente(gestor,s,vend,comp));
+            t = new Thread(new Thread_Cliente(gestor,s));
             t.start();
         }        
         ss.close();

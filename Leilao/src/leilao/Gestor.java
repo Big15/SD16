@@ -16,12 +16,12 @@ public class Gestor {
     private ReentrantLock lockLei;
     private int idLgera = 1;
 
-    public Gestor(HashMap<String,Vendedor> vendedores,HashMap<String,Comprador> compradores) {
+    public Gestor() {
        this.emCurso = new TreeMap<>();
        this.terminados = new HashMap<>();
        this.historicoLicitacao = new TreeMap<>();
-       this.vendedores = vendedores;
-       this.compradores = compradores;
+       this.vendedores =  new HashMap<>();
+       this.compradores =  new HashMap<>();
        this.lockLei = new ReentrantLock();
       
     }
@@ -91,6 +91,17 @@ public class Gestor {
         this.idLgera = idLgera;
     }
     
+    public Utilizador getUtilizador(String n){
+    Utilizador u = null;
+        
+        if(this.vendedores.containsKey(n))
+            u = this.vendedores.get(n);
+        else
+            u = this.compradores.get(n);
+    
+    return u;
+    }
+    
     public Leilao constroi_Leilao(String parse[],String idUti){
     Leilao l;
     
@@ -126,11 +137,33 @@ public class Gestor {
     }
     
     public void termina_Leilao(String id,String idUti){
+        lockLei.lock();
+        Leilao l = new Leilao();
+        Licitacao b = new Licitacao();
+        Iterator it;
+        try{
+        if(this.emCurso.containsKey(id)){
+            l = this.emCurso.get(id);
+            if(l.getVendedor().equals(idUti)){
+            this.emCurso.remove(id);
+            l.setEstado(false);
+            this.terminados.put(l.getId(),l);
+            if(this.historicoLicitacao.containsKey(id)){
+                it = this.historicoLicitacao.get(id).iterator();
+                b = (Licitacao) it.next();
+                System.out.println("O Vencedor é "+b.getComprador()+" e dispendeu "+ b.getValor()+" €\n");
+            }
+            }else{System.out.println("O Leilão para o id = " +id+" não lhe pertence!!");  }
+        }else{
+        System.out.println("O Leilão para o id = " +id+" não existe!!");
+        }
         
+        }finally{
         
+        lockLei.unlock();
         
-        
-        
+        }
+           
     }
     
     public Licitacao constroi_Licitacao(String parse[],String idUti){

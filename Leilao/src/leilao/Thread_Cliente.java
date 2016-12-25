@@ -21,20 +21,18 @@ import java.util.logging.Logger;
 public class Thread_Cliente implements Runnable {
     private Gestor gestor;
     private final Socket mySocket;
-    HashMap<String,Vendedor> vend;
-    HashMap<String,Comprador> comp;
     Utilizador user;
     PrintWriter out;
     BufferedReader in;
     
     /*No servidor depois do accept, é criada a Thread*/
-    public Thread_Cliente(Gestor g, Socket s, HashMap<String,Vendedor> vendedores,HashMap<String,Comprador> compradores){
+    public Thread_Cliente(Gestor g, Socket s){
         this.gestor = g; 
-         this.vend = vendedores;
-        this.comp = compradores;
         this.mySocket = s;
     
     }    
+    
+    
     
     public void run(){
         try {
@@ -46,8 +44,8 @@ public class Thread_Cliente implements Runnable {
             while( continua && ((l = in.readLine()) != null)){
                 String parse[] =  l.split(":");
                 if( parse[0].equals("login") && (parse.length >= 3) ){ 
-                    if(vend.containsKey(parse[1])||comp.containsKey(parse[1]) ){ //verifica se user existe
-                        Utilizador u = vend.get(parse[1]);
+                   if(!(this.gestor.getUtilizador(parse[1])).equals(null)){ //verifica se user existe
+                        Utilizador u = this.gestor.getUtilizador(parse[1]) ;
                         if(!u.getloged()){ //verifica se já esta loged
                             if(u.validaPass(parse[2])){ // verifica pass              
                                 if(u.login()){
@@ -62,7 +60,7 @@ public class Thread_Cliente implements Runnable {
                 } else { out.println("Comando errado!"); out.flush();}
             }
             
-            //le o pedido do Cliente e cria Thread para o tartar
+            //le o pedido do Cliente e cria Thread para o tratar
             while( (pedido=in.readLine()) != null ){
                 Thread cr = new Thread( new Thread_Comandos(this.gestor, this.user.getNome(), out, pedido));
                 cr.start();                 

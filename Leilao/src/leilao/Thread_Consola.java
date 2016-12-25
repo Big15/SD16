@@ -18,21 +18,19 @@ import java.util.Scanner;
 
 public class Thread_Consola extends Thread{
     private Gestor gestor;
-    private HashMap<String,Vendedor> vend;
-    private HashMap<String,Comprador> comp;
     boolean exit;
     Utilizador user;
     ServerSocket ss;
     
-    public Thread_Consola(Gestor g,HashMap<String,Vendedor> vendedores,HashMap<String,Comprador> compradores, boolean exit,ServerSocket ss){
+    public Thread_Consola(Gestor g, boolean exit,ServerSocket ss){
         this.gestor = g;
-        this.vend = vendedores;
-        this.comp = compradores;
         this.exit = exit;
         this.ss = ss;
     }
     
-     public boolean login(){
+    
+    
+    public boolean login(){
         boolean continua = true;
         Scanner in = new Scanner(System.in);
         String l = "";
@@ -41,8 +39,8 @@ public class Thread_Consola extends Thread{
             while( continua && (!"sair".equals(l = in.nextLine()))){
                 String parse[] =  l.split(":");
                 if( parse[0].equals("login") && (parse.length >= 3) ){ 
-                    if(vend.containsKey(parse[1])||comp.containsKey(parse[1] )){ //verifica se user existe
-                        Utilizador u = comp.get(parse[1]);
+                    if(!(this.gestor.getUtilizador(parse[1])).equals(null)){ //verifica se user existe
+                        Utilizador u = this.gestor.getUtilizador(parse[1]) ;
                         if(!u.getloged()){ //verifica se já esta loged
                             if(u.validaPass(parse[2])){ // verifica pass              
                                 if(u.login()){

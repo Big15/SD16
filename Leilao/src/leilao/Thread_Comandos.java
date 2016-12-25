@@ -42,8 +42,8 @@ public class Thread_Comandos implements Runnable{
         switch (lista[0]) {
             case "Leilao":
                 try {
-                    Leilao l = this.gestor.constroi_Leilao(lista, this.idUti);
                     if (this.gestor.getVendedores().containsKey(idUti)) {
+                        Leilao l = this.gestor.constroi_Leilao(lista, this.idUti);
                         this.gestor.inicia_Leilao(l, this.idUti);
                        // System.out.println(this.gestor.getEmCurso().toString());
                        // System.out.println(this.gestor.getVendedores().get(idUti).getItens_Leiloados().toString());
@@ -92,10 +92,11 @@ public class Thread_Comandos implements Runnable{
 
             case "Termina":
                 try {
+                    this.gestor.termina_Leilao(lista[1],this.idUti);
                 } catch (IndexOutOfBoundsException e) {
                     System.out.println(e.toString());
-                    msg = "comando errado: faltam argumentos";}
-               // msg = this.armazem.listagemTarefas();
+                    msg = "comando errado: faltam argumentos";
+                }
                 break;
                 
             case "ListagemEmCurso":
